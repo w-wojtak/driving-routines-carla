@@ -1,0 +1,10 @@
+future
+numpy; python_version < '3.0'
+numpy==1.18.4; python_version >= '3.0'
+pygame~=2.5.2
+matplotlib~=3.5.3
+open3d
+Pillow~=9.5.0
+
+carla~=0.9.14
+numpy~=1.21.6
