@@ -30,6 +30,7 @@ def get_transform(vehicle_location, angle, d=6.4):
     return carla.Transform(location, carla.Rotation(yaw=180 + angle, pitch=-15))
 
 
+
 def main():
     client = carla.Client('localhost', 2000)
     client.set_timeout(5.0)
