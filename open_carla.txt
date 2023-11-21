@@ -1,0 +1,1 @@
+CarlaUE4.exe -carla-rpc-port=2000 -windowed -ResX=700 -ResY=500

@@ -3,17 +3,7 @@ import random
 import functools
 import time
 
-
-def print_vehicle_location(vehicle, timestamp, print_interval):
-    current_time = timestamp.elapsed_seconds if timestamp else 0
-    if hasattr(print_vehicle_location, 'last_print_time'):
-        time_since_last_print = current_time - print_vehicle_location.last_print_time
-        if time_since_last_print >= print_interval:
-            vehicle_location = vehicle.get_location()
-            print(vehicle_location)
-            print_vehicle_location.last_print_time = current_time
-    else:
-        print_vehicle_location.last_print_time = current_time
+import carla_helpers
 
 
 # Connect to the client and retrieve the world object
@@ -58,7 +48,7 @@ vehicle = world.spawn_actor(bp, transform)
 
 # Set up the on_tick callback with the desired print interval (e.g., 10 seconds)
 print_interval = 2
-world.on_tick(functools.partial(print_vehicle_location, vehicle, print_interval=print_interval))
+world.on_tick(functools.partial(carla_helpers.print_vehicle_location, vehicle, print_interval=print_interval))
 
 try:
     while True:
