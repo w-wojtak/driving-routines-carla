@@ -82,19 +82,55 @@ def draw_route_on_map(world, route, waypoint_symbol='^', color=carla.Color(r=0, 
         )
 
 
-def move_car_along_route(world, vehicle, route, sleep_time=0.01, display_image=False):
+# def move_car_along_route(world, vehicle, route, sleep_time=0.01, display_image=False):
+#     """
+#     Move the car along the specified route.
+#
+#     Parameters:
+#         - vehicle: The Carla vehicle object.
+#         - route: The route to follow.
+#         - sleep_time: The time to sleep between movements (default is 0.1 seconds).
+#         - display_image: Whether to display the image during the movement (default is False).
+#     """
+#     for waypoint in route:
+#         # Move the car to the current waypoint
+#         vehicle.set_transform(waypoint[0].transform)
+#
+#         # Display image if requested
+#         if display_image:
+#             # Assuming you have the 'camera_data' defined
+#             # cv2.imshow('Fake self-driving', camera_data['image'])
+#             # cv2.waitKey(50)
+#             pass
+#         else:
+#             pass
+#
+#         draw_text_annotation(world, vehicle, sleep_time)
+#
+#         # Sleep for a short duration
+#         time.sleep(sleep_time)
+#
+#     # vehicle.destroy()
+#     print("Route completed.")
+def move_car_along_route(world, vehicle, route, destinations, sleep_time=0.01, display_image=False):
     """
     Move the car along the specified route.
 
     Parameters:
         - vehicle: The Carla vehicle object.
         - route: The route to follow.
+        - destinations: Dictionary of destination names and their corresponding locations.
         - sleep_time: The time to sleep between movements (default is 0.1 seconds).
         - display_image: Whether to display the image during the movement (default is False).
     """
     for waypoint in route:
         # Move the car to the current waypoint
         vehicle.set_transform(waypoint[0].transform)
+
+        # Check if the vehicle has arrived at any of the destinations
+        for destination_name, destination_location in destinations.items():
+            if check_arrival(waypoint[0].transform.location, destination_location):
+                print(f"You arrived at {destination_name}")
 
         # Display image if requested
         if display_image:
@@ -112,6 +148,26 @@ def move_car_along_route(world, vehicle, route, sleep_time=0.01, display_image=F
 
     # vehicle.destroy()
     print("Route completed.")
+
+
+def check_arrival(current_location, destination_location, tolerance=carla.Location(x=2, y=2, z=2)):
+    """
+    Check if the vehicle has arrived at the destination within the specified tolerance.
+
+    Parameters:
+        - current_location: The current location of the vehicle.
+        - destination_location: The destination location.
+        - tolerance: The tolerance in x, y, and z coordinates (default is 1 meter).
+
+    Returns:
+        - True if the vehicle has arrived, False otherwise.
+    """
+    delta_location = current_location - destination_location
+    return (
+            abs(delta_location.x) <= tolerance.x
+            and abs(delta_location.y) <= tolerance.y
+            and abs(delta_location.z) <= tolerance.z
+    )
 
 
 def add_text_annotations(world, locations):
@@ -161,7 +217,7 @@ def draw_text_annotation(world, vehicle, life_time):
     )
 
 
-def execute_route(grp, world, vehicle, start_location, end_location, sleep_time=2, display_image=False):
+def execute_route(grp, world, vehicle, destinations, start_location, end_location, sleep_time=2, display_image=False):
     """
     Execute a route from start_location to end_location for the vehicle.
 
@@ -180,7 +236,7 @@ def execute_route(grp, world, vehicle, start_location, end_location, sleep_time=
     draw_route_on_map(world, route)
 
     # Move the vehicle along the route
-    move_car_along_route(world, vehicle, route, sleep_time=0.01, display_image=display_image)
+    move_car_along_route(world, vehicle, route, destinations, sleep_time=0.01, display_image=display_image)
 
     # Make the car stay at this location for x seconds
     time.sleep(sleep_time)

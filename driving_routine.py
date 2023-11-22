@@ -57,16 +57,16 @@ if desired_blueprint:
     vehicle = carla_helpers.spawn_vehicle_with_color(world, desired_blueprint, initial_transform)
 
     # Execute Route 1
-    carla_helpers.execute_route(grp, world, vehicle, destinations['HOME'], destinations['SCHOOL'])
+    carla_helpers.execute_route(grp, world, vehicle, destinations, destinations['HOME'], destinations['SCHOOL'])
 
     # Execute Route 2
-    carla_helpers.execute_route(grp, world, vehicle, destinations['SCHOOL'], destinations['WORK'])
+    carla_helpers.execute_route(grp, world, vehicle, destinations, destinations['SCHOOL'], destinations['WORK'])
 
     # Execute Route 3
-    carla_helpers.execute_route(grp, world, vehicle, destinations['WORK'], destinations['SCHOOL'])
+    carla_helpers.execute_route(grp, world, vehicle, destinations, destinations['WORK'], destinations['SCHOOL'])
 
     # Execute Route 4
-    carla_helpers.execute_route(grp, world, vehicle, destinations['SCHOOL'], destinations['HOME'])
+    carla_helpers.execute_route(grp, world, vehicle, destinations, destinations['SCHOOL'], destinations['HOME'])
 
 else:
     print(f"Blueprint {desired_blueprint_key} not found.")
