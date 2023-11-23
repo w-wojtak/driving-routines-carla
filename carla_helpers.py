@@ -82,36 +82,6 @@ def draw_route_on_map(world, route, waypoint_symbol='^', color=carla.Color(r=0, 
         )
 
 
-# def move_car_along_route(world, vehicle, route, sleep_time=0.01, display_image=False):
-#     """
-#     Move the car along the specified route.
-#
-#     Parameters:
-#         - vehicle: The Carla vehicle object.
-#         - route: The route to follow.
-#         - sleep_time: The time to sleep between movements (default is 0.1 seconds).
-#         - display_image: Whether to display the image during the movement (default is False).
-#     """
-#     for waypoint in route:
-#         # Move the car to the current waypoint
-#         vehicle.set_transform(waypoint[0].transform)
-#
-#         # Display image if requested
-#         if display_image:
-#             # Assuming you have the 'camera_data' defined
-#             # cv2.imshow('Fake self-driving', camera_data['image'])
-#             # cv2.waitKey(50)
-#             pass
-#         else:
-#             pass
-#
-#         draw_text_annotation(world, vehicle, sleep_time)
-#
-#         # Sleep for a short duration
-#         time.sleep(sleep_time)
-#
-#     # vehicle.destroy()
-#     print("Route completed.")
 def move_car_along_route(world, vehicle, route, destinations, sleep_time=0.01, display_image=False):
     """
     Move the car along the specified route.
