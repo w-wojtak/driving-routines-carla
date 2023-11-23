@@ -63,7 +63,7 @@ initial_transform = carla.Transform(destinations['HOME'], carla.Rotation(yaw=90.
 kernel_pars = [1, 0.7, 0.9]
 
 # Field parameters
-x_lim = 100 # Limits for space, it is set as [-x_lim, x_lim].
+x_lim = 100  # Limits for space, it is set as [-x_lim, x_lim].
 dx, dt = 0.05, 0.05  # Spatial and temporal discretization.
 theta = 1  # Threshold for the activation function.
 
@@ -90,16 +90,16 @@ input_on = False
 # ----------------------------------------------------------------
 
 # Number of waypoints to add at the end of each route
-t1 = 50
-t2 = 30
-t3 = 70
+# = time to stay at each location
+t1 = 100
+t2 = 1000
+t3 = 300
 
 # Keep track of the previous waypoints
 previous_waypoints = []
 
 # So let's tell the world to spawn the vehicle.
 if desired_blueprint:
-
 
     # Call the function to spawn the vehicle
     vehicle = carla_helpers.spawn_vehicle_with_color(world, desired_blueprint, initial_transform)
@@ -118,7 +118,7 @@ if desired_blueprint:
     route = route_1 + route_2 + route_3
 
     # Draw the route on the map
-    carla_helpers.draw_route_on_map(world, route, life_time=100.0)
+    carla_helpers.draw_route_on_map(world, route, life_time=150.0)
 
     # Set the start time
     time_start = time.time()
@@ -144,7 +144,8 @@ if desired_blueprint:
         # Check if the vehicle has arrived at any of the destinations
         for destination_name, destination_location in destinations.items():
             if carla_helpers.check_arrival(waypoint[0].transform.location, destination_location):
-                print(f"You arrived at {destination_name}")
+                if (len(previous_waypoints) > 2) and waypoint != previous_waypoints[-1]:
+                    print(f"You arrived at {destination_name}")
                 # Set input_position based on the destination_name
                 input_position = input_positions.get(destination_name, 0)
                 input_on = True
@@ -187,45 +188,12 @@ if desired_blueprint:
         if len(previous_waypoints) > 4:
             previous_waypoints.pop(0)
 
-    # Additional iterations
-    extra_iterations = 200
-    for extra_iteration in range(extra_iterations):
-
-        # Additional code for extra iterations, if needed
-        # Calculate the elapsed time
-        elapsed_time = time.time() - time_start + day_onset
-
-        elapsed_time_minutes = elapsed_time
-
-        # Format elapsed time as HH:MM
-        elapsed_time_formatted = str(datetime.timedelta(minutes=elapsed_time_minutes))
-
-        # Update the field (modify this part according to your needs)
-        f = np.heaviside(u_field - theta, 1)
-        f_hat = np.fft.fft(f)
-        conv = dx * np.fft.ifftshift(np.real(np.fft.ifft(f_hat * w_hat)))
-        h_u = h_u + dt / tau_h * f  # threshold adaptation
-
-        if extra_iteration > 10:
-            input = 0  # Set input to 0 for extra iterations
-
-        u_field = u_field + dt * (-u_field + conv + input + h_u)
-
-        # Plot the field activity for each 10th iteration
-        if extra_iteration % 10 == 0:
-            plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
-            plt.clf()  # Clear the figure for the next time step
-
-        if extra_iteration == extra_iterations - 1:
-            # Save the figure on the last iteration
-            plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
-            fig.savefig('routine_memory.png')
-            plt.clf()
-
-        # Sleep for a short duration
-        time.sleep(0.001)
-
     time.sleep(5)
+
+    plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
+    fig.savefig('routine_memory.png')
+    plt.clf()
+
     # vehicle.destroy()
     print("Route completed.")
 
