@@ -4,6 +4,7 @@ import time
 from matplotlib.widgets import Slider, Button
 
 
+
 def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
     """
     Plots the activity at a given time step.
@@ -23,7 +24,11 @@ def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
     # plt.xlabel('x')
     plt.ylabel('u(x)')
     # add title with the current time step
-    plt.title(f't = {elapsed_time:.2f}s')
+    # Extract only hours and minutes
+    # hours, minutes, _ = map(int, elapsed_time.split(':'))
+
+    # Update the title with formatted elapsed time
+    plt.title(f'time:  {elapsed_time[:4]}')
 
 
     plt.xticks([-60, -30, 0], ["Home", "Work", "School"])

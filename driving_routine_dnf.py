@@ -1,5 +1,5 @@
 import time
-
+import datetime
 import carla
 import carla_helpers
 import sys
@@ -130,11 +130,16 @@ if desired_blueprint:
         # Move the car to the current waypoint
         vehicle.set_transform(waypoint[0].transform)
 
-        # Calculate the elapsed time
-        elapsed_time = time.time() - time_start
+        # day onset time in minutes (420 -> 7AM)
+        day_onset = 420
 
-        # Print the elapsed time
-        # print(f"Elapsed time: {elapsed_time:.2f} seconds")
+        # Calculate the elapsed time
+        elapsed_time = time.time() - time_start + day_onset
+
+        elapsed_time_minutes = elapsed_time
+
+        # Format elapsed time as HH:MM
+        elapsed_time_formatted = str(datetime.timedelta(minutes=elapsed_time_minutes))
 
         # Check if the vehicle has arrived at any of the destinations
         for destination_name, destination_location in destinations.items():
@@ -142,7 +147,6 @@ if desired_blueprint:
                 print(f"You arrived at {destination_name}")
                 # Set input_position based on the destination_name
                 input_position = input_positions.get(destination_name, 0)
-                print(f"Setting input_position to {input_position}")
                 input_on = True
                 break  # Exit the loop when the vehicle arrives at a destination
             else:
@@ -159,9 +163,9 @@ if desired_blueprint:
         f_hat = np.fft.fft(f)
         conv = dx * np.fft.ifftshift(np.real(np.fft.ifft(f_hat * w_hat)))
         h_u = h_u + dt / tau_h * f  # threshold adaptation
-        if input_on and elapsed_time > 5:
+        if input_on and elapsed_time > (day_onset + 5):
             input = input_shape[0] * np.exp(-0.5 * (x - input_position) ** 2 / input_shape[1] ** 2)
-            print(f"input on at {input_position}")
+            # print(f"input on at {input_position}")
         else:
             input = 0
 
@@ -169,7 +173,7 @@ if desired_blueprint:
 
         # plot the field activity u_field for each 10th waypoint
         if index % 10 == 0:
-            plot_activity_at_time_step(u_field, field_pars, elapsed_time, fig=fig)
+            plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
             # clear the figure so that the next time step can be plotted
             plt.clf()
 
@@ -188,7 +192,13 @@ if desired_blueprint:
     for extra_iteration in range(extra_iterations):
 
         # Additional code for extra iterations, if needed
-        elapsed_time = time.time() - time_start
+        # Calculate the elapsed time
+        elapsed_time = time.time() - time_start + day_onset
+
+        elapsed_time_minutes = elapsed_time
+
+        # Format elapsed time as HH:MM
+        elapsed_time_formatted = str(datetime.timedelta(minutes=elapsed_time_minutes))
 
         # Update the field (modify this part according to your needs)
         f = np.heaviside(u_field - theta, 1)
@@ -203,12 +213,12 @@ if desired_blueprint:
 
         # Plot the field activity for each 10th iteration
         if extra_iteration % 10 == 0:
-            plot_activity_at_time_step(u_field, field_pars, elapsed_time, fig=fig)
+            plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
             plt.clf()  # Clear the figure for the next time step
 
         if extra_iteration == extra_iterations - 1:
             # Save the figure on the last iteration
-            plot_activity_at_time_step(u_field, field_pars, elapsed_time, fig=fig)
+            plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
             fig.savefig('routine_memory.png')
             plt.clf()
 
