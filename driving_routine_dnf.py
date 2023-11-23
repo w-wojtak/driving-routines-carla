@@ -63,7 +63,7 @@ initial_transform = carla.Transform(destinations['HOME'], carla.Rotation(yaw=90.
 kernel_pars = [1, 0.7, 0.9]
 
 # Field parameters
-x_lim, t_lim = 100, 100  # Limits for space and time. Space is set as [-x_lim, x_lim], time as [0, t_lim].
+x_lim = 100 # Limits for space, it is set as [-x_lim, x_lim].
 dx, dt = 0.05, 0.05  # Spatial and temporal discretization.
 theta = 1  # Threshold for the activation function.
 
@@ -71,7 +71,7 @@ theta = 1  # Threshold for the activation function.
 tau_h = 20  # time constant of the threshold adaptation
 h_0 = 0  # initial value of h-level
 
-field_pars = [x_lim, t_lim, dx, dt, theta]
+field_pars = [x_lim, dx, dt, theta]
 
 x = np.arange(-x_lim, x_lim + dx, dx)
 
@@ -195,9 +195,6 @@ if desired_blueprint:
     time.sleep(5)
     # vehicle.destroy()
     print("Route completed.")
-
-    # # Save the figure to file
-    # fig.savefig('routine_memory.png')
 
     elapsed_time_total = time.time() - time_start
     print(f"Total elapsed time: {elapsed_time_total:.2f} seconds")

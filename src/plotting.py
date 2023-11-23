@@ -9,7 +9,7 @@ def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
     Plots the activity at a given time step.
     """
 
-    x_lim, _, dx, dt, _ = field_pars
+    x_lim, dx, dt, _ = field_pars
     x = np.arange(-x_lim, x_lim + dx, dx)
 
     # If fig is not provided, create a new figure
