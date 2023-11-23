@@ -24,6 +24,7 @@ def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
     # add title with the current time step
     plt.title(f't = {elapsed_time:.2f}s')
 
+
     plt.xticks([-60, -30, 0], ["Home", "Work", "School"])
 
     # Draw the updated figure

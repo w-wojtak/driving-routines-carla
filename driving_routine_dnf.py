@@ -92,6 +92,7 @@ input_on = False
 # So let's tell the world to spawn the vehicle.
 if desired_blueprint:
 
+
     # Call the function to spawn the vehicle
     vehicle = carla_helpers.spawn_vehicle_with_color(world, desired_blueprint, initial_transform)
 
