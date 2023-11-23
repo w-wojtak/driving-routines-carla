@@ -89,6 +89,14 @@ input_on = False
 
 # ----------------------------------------------------------------
 
+# Number of waypoints to add at the end of each route
+t1 = 50
+t2 = 30
+t3 = 70
+
+# Keep track of the previous waypoints
+previous_waypoints = []
+
 # So let's tell the world to spawn the vehicle.
 if desired_blueprint:
 
@@ -100,6 +108,11 @@ if desired_blueprint:
     route_1 = grp.trace_route(destinations['HOME'], destinations['SCHOOL'])
     route_2 = grp.trace_route(destinations['SCHOOL'], destinations['WORK'])
     route_3 = grp.trace_route(destinations['WORK'], destinations['HOME'])
+
+    # Replicate the last waypoint for each route
+    route_1 = carla_helpers.replicate_last_waypoint(route_1, t1)
+    route_2 = carla_helpers.replicate_last_waypoint(route_2, t2)
+    route_3 = carla_helpers.replicate_last_waypoint(route_3, t3)
 
     # Combine the routes
     route = route_1 + route_2 + route_3
@@ -129,12 +142,15 @@ if desired_blueprint:
                 print(f"You arrived at {destination_name}")
                 # Set input_position based on the destination_name
                 input_position = input_positions.get(destination_name, 0)
-                # input_position_index = np.argmin(np.abs(x - input_position))
                 print(f"Setting input_position to {input_position}")
                 input_on = True
                 break  # Exit the loop when the vehicle arrives at a destination
             else:
                 input_on = False
+
+        # Check if the current waypoint is equal to the previous 4 waypoints
+        if (len(previous_waypoints) > 2) and waypoint == previous_waypoints[-3]:
+            input_on = False
 
         carla_helpers.draw_text_annotation(world, vehicle, life_time=0.03)
 
@@ -159,6 +175,13 @@ if desired_blueprint:
 
         # Sleep for a short duration
         time.sleep(0.001)
+
+        # Update the previous waypoints list
+        previous_waypoints.append(waypoint)
+
+        # Only keep the last 5 waypoints in the list to avoid excessive memory usage
+        if len(previous_waypoints) > 4:
+            previous_waypoints.pop(0)
 
     # Additional iterations
     extra_iterations = 200

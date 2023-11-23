@@ -210,3 +210,9 @@ def execute_route(grp, world, vehicle, destinations, start_location, end_locatio
 
     # Make the car stay at this location for x seconds
     time.sleep(sleep_time)
+
+
+def replicate_last_waypoint(route, replication_count):
+    last_waypoint = route[-1]
+    additional_waypoints = [last_waypoint] * replication_count
+    return route + additional_waypoints
