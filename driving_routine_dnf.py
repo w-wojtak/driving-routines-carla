@@ -17,6 +17,9 @@ destinations = {
     'SCHOOL': carla.Location(x=-20, y=-140, z=0.5)
 }
 
+# Create a copy of the destinations dictionary
+destinations_copy = destinations.copy()
+
 input_positions = {
     'HOME': -60,
     'WORK': -30,
@@ -124,7 +127,10 @@ if desired_blueprint:
     time_start = time.time()
 
     # Create the figure for u_field
-    fig, ax = plt.subplots(figsize=(4, 3))
+    fig, ax = plt.subplots(figsize=(4, 4))
+
+    # Set message to empty string
+    message = []
 
     for index, waypoint in enumerate(route):
         # Move the car to the current waypoint
@@ -145,7 +151,14 @@ if desired_blueprint:
         for destination_name, destination_location in destinations.items():
             if carla_helpers.check_arrival(waypoint[0].transform.location, destination_location):
                 if (len(previous_waypoints) > 2) and waypoint != previous_waypoints[-1]:
-                    print(f"You arrived at {destination_name}")
+                    if destination_name in destinations_copy.keys():
+                        print(f"You arrived at {destination_name}")
+                        message = f"You arrived at {destination_name}"
+                        plot_activity_with_message(u_field, field_pars, elapsed_time_formatted, message, fig=fig)
+                        plt.clf()
+                        del destinations_copy[destination_name]
+                        message = []
+
                 # Set input_position based on the destination_name
                 input_position = input_positions.get(destination_name, 0)
                 input_on = True
@@ -173,8 +186,8 @@ if desired_blueprint:
         u_field = u_field + dt * (-u_field + conv + input + h_u)
 
         # plot the field activity u_field for each 10th waypoint
-        if index % 10 == 0:
-            plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
+        if (index % 10 == 0) or message:
+            plot_activity_with_message(u_field, field_pars, elapsed_time_formatted, message, fig=fig)
             # clear the figure so that the next time step can be plotted
             plt.clf()
 
@@ -199,12 +212,6 @@ if desired_blueprint:
 
     elapsed_time_total = time.time() - time_start
     print(f"Total elapsed time: {elapsed_time_total:.2f} seconds")
-
-    # Specify the file name
-    file_name_field = "sequence_memory.npy"
-
-    # Save memory to the file
-    np.save(file_name_field, u_field)
 
 else:
     print(f"Blueprint {desired_blueprint_key} not found.")

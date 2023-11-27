@@ -4,6 +4,114 @@ import time
 from matplotlib.widgets import Slider, Button
 
 
+def plot_activity_with_message(activity, field_pars, elapsed_time, message=None, fig=None):
+    """
+    Plots the activity at a given time step.
+    """
+
+    x_lim, dx, dt, _ = field_pars
+    x = np.arange(-x_lim, x_lim + dx, dx)
+
+    # If fig is not provided, create a new figure
+    if fig is None:
+        fig, ax = plt.subplots(figsize=(4, 3))
+    else:
+        ax = fig.gca()
+
+    # Plot activity in the top part of the figure
+    plt.plot(x, activity)
+    plt.xlim(-90, 30)
+    plt.ylim(-1, 10)
+    plt.ylabel('u(x)')
+
+    # Update the title with formatted elapsed time
+    plt.title(f'time:  {elapsed_time[:4]}')
+
+    plt.xticks([-60, -30, 0], ["Home", "Work", "School"])
+
+    ax.set_aspect(8 / 1)
+
+    # I message not empty, add a text field
+    if message:
+        ax.annotate(message,  # Your string
+
+                    # The point that we'll place the text in relation to
+                    xy=(0.5, 0),
+                    # Interpret the x as axes coords, and the y as figure coords
+                    xycoords=('axes fraction', 'figure fraction'),
+
+                    # The distance from the point that the text will be at
+                    xytext=(0, 5),
+                    # Interpret `xytext` as an offset in points...
+                    textcoords='offset points',
+
+                    # Any other text parameters we'd like
+                    size=14, ha='center', va='bottom')
+        plt.pause(1)
+
+    # Draw the updated figure
+    plt.draw()
+
+    # Add a short pause to allow the plot to update
+    plt.pause(0.01)
+
+    return fig, ax
+
+
+# def plot_activity_with_message(activity, field_pars, elapsed_time, messages=None, fig=None):
+#     """
+#     Plots the activity at a given time step with an optional message text field.
+#
+#     Parameters:
+#         - activity: The field activity to plot.
+#         - field_pars: Parameters of the field.
+#         - elapsed_time: Elapsed time in seconds.
+#         - messages: List of messages to display in the text field.
+#         - fig: Matplotlib figure object. If None, a new figure will be created.
+#     """
+#     x_lim, dx, dt, _ = field_pars
+#     x = np.arange(-x_lim, x_lim + dx, dx)
+#
+#     if fig is None:
+#         fig, ax = plt.subplots()
+#     else:
+#         ax = fig.gca()
+#
+#     # Create a grid with two rows: one for the plot and one for text messages
+#     gs = fig.add_gridspec(2, 1, height_ratios=[3, 1])
+#
+#     # Top subplot for the plot
+#     ax_top = fig.add_subplot(gs[0])
+#     ax_top.plot(x, activity)
+#     ax_top.set_xlim(-x_lim, x_lim)
+#     # ax_top.set_xlabel('x')
+#     ax_top.set_ylabel('u(x)')
+#     ax_top.set_title(f'time:  {elapsed_time[:4]}')
+#
+#     ax_top.set_xticks([-60, -30, 0], ["Home", "Work", "School"])
+#
+#     # Bottom subplot for text messages
+#     ax_bottom = fig.add_subplot(gs[1], sharex=ax_top)
+#     ax_bottom.axis('off')  # Turn off axis for the bottom subplot
+#
+#     # Add text field for messages
+#     if messages:
+#         text_field_y = -0.5  # Adjust the y-coordinate as needed
+#         for i, message in enumerate(messages):
+#             ax_bottom.text(0.1, text_field_y - i * 0.15, message, fontsize=10, verticalalignment='top')
+#
+#     plt.tight_layout()
+#
+#     # plt.xticks([-60, -30, 0], ["Home", "Work", "School"])
+#
+#     # Draw the updated figure
+#     plt.draw()
+#
+#     # Add a short pause to allow the plot to update
+#     plt.pause(0.01)
+#
+#     return fig
+
 
 def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
     """
@@ -30,8 +138,14 @@ def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
     # Update the title with formatted elapsed time
     plt.title(f'time:  {elapsed_time[:4]}')
 
-
     plt.xticks([-60, -30, 0], ["Home", "Work", "School"])
+
+    # # Now let's add your additional information
+    # ax.annotate('...Additional information...',
+    #             xy=(0.5, 0), xytext=(0, 10),
+    #             xycoords=('axes fraction', 'figure fraction'),
+    #             textcoords='offset points',
+    #             size=14, ha='center', va='bottom')
 
     # Draw the updated figure
     plt.draw()
