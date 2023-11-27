@@ -212,7 +212,7 @@ if desired_blueprint:
     file_name_field = "sequence_memory.npy"
 
     # Save the array to the file
-    np.save(file_name_field, u_field)
+    # np.save(file_name_field, u_field)
 
 else:
     print(f"Blueprint {desired_blueprint_key} not found.")
