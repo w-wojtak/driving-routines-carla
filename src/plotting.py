@@ -4,6 +4,53 @@ import time
 from matplotlib.widgets import Slider, Button
 
 
+def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, message=None, fig=None, axes=None):
+    """
+    Plots u_field, u_dec, and u_wm in a single figure with three subplots in one row and three columns.
+    """
+    x_lim, dx, dt, _ = field_pars
+    x = np.arange(-x_lim, x_lim + dx, dx)
+
+    # If fig and axes are not provided, create a new figure
+    if fig is None or axes is None:
+        fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+    else:
+        fig.clear()
+        axes = fig.subplots(1, 3)
+
+    # Plot u_field, u_dec, and u_wm in three subplots
+    for i, (activity, label, y_lim) in enumerate(
+            zip([u_field, u_dec, u_wm], ['u_field(x)', 'u_dec(x)', 'u_wm(x)'], [(-1, 10), (-10, 10), (-2, 3.5)])):
+        axes[i].plot(x, activity)
+        axes[i].set_xlim(-90, 30)
+        axes[i].set_xticks([-60, -30, 0])
+        axes[i].set_xticklabels(["Home", "Work", "School"])
+        axes[i].set_ylim(y_lim)
+        axes[i].set_title(label)
+        axes[i].set_ylabel('Amplitude')
+
+    # Calculate hours and minutes
+    hours = int(elapsed_time // 60)
+    minutes = int(elapsed_time % 60)
+
+    fig.suptitle(f'Time: {hours:02d}:{minutes:02d}')
+
+    # If message not empty, add a text field
+    if message:
+        for i in range(3):
+            axes[i].annotate(message, xy=(0.5, 0),
+                             xycoords=('axes fraction', 'figure fraction'),
+                             xytext=(0, 5),
+                             textcoords='offset points',
+                             size=14, ha='center', va='bottom')
+
+    # Draw the updated figure
+    plt.draw()
+    plt.pause(0.01)
+
+    return fig, axes
+
+
 def plot_activity_with_message(activity, field_pars, elapsed_time, message=None, fig=None):
     """
     Plots the activity at a given time step.
@@ -24,15 +71,9 @@ def plot_activity_with_message(activity, field_pars, elapsed_time, message=None,
     plt.ylim(-1, 10)
     plt.ylabel('u(x)')
 
-    # Update the title with formatted elapsed time
-    # plt.title(f'time:  {elapsed_time[:4]}')
-
     # Calculate hours and minutes
     hours = int(elapsed_time // 60)
     minutes = int(elapsed_time % 60)
-
-    # Format the result
-    # formatted_time = f"{hours:02d}:{minutes:02d}"
 
     plt.title(f'time:  {hours:02d}:{minutes:02d}')
 
@@ -67,61 +108,6 @@ def plot_activity_with_message(activity, field_pars, elapsed_time, message=None,
     return fig, ax
 
 
-# def plot_activity_with_message(activity, field_pars, elapsed_time, messages=None, fig=None):
-#     """
-#     Plots the activity at a given time step with an optional message text field.
-#
-#     Parameters:
-#         - activity: The field activity to plot.
-#         - field_pars: Parameters of the field.
-#         - elapsed_time: Elapsed time in seconds.
-#         - messages: List of messages to display in the text field.
-#         - fig: Matplotlib figure object. If None, a new figure will be created.
-#     """
-#     x_lim, dx, dt, _ = field_pars
-#     x = np.arange(-x_lim, x_lim + dx, dx)
-#
-#     if fig is None:
-#         fig, ax = plt.subplots()
-#     else:
-#         ax = fig.gca()
-#
-#     # Create a grid with two rows: one for the plot and one for text messages
-#     gs = fig.add_gridspec(2, 1, height_ratios=[3, 1])
-#
-#     # Top subplot for the plot
-#     ax_top = fig.add_subplot(gs[0])
-#     ax_top.plot(x, activity)
-#     ax_top.set_xlim(-x_lim, x_lim)
-#     # ax_top.set_xlabel('x')
-#     ax_top.set_ylabel('u(x)')
-#     ax_top.set_title(f'time:  {elapsed_time[:4]}')
-#
-#     ax_top.set_xticks([-60, -30, 0], ["Home", "Work", "School"])
-#
-#     # Bottom subplot for text messages
-#     ax_bottom = fig.add_subplot(gs[1], sharex=ax_top)
-#     ax_bottom.axis('off')  # Turn off axis for the bottom subplot
-#
-#     # Add text field for messages
-#     if messages:
-#         text_field_y = -0.5  # Adjust the y-coordinate as needed
-#         for i, message in enumerate(messages):
-#             ax_bottom.text(0.1, text_field_y - i * 0.15, message, fontsize=10, verticalalignment='top')
-#
-#     plt.tight_layout()
-#
-#     # plt.xticks([-60, -30, 0], ["Home", "Work", "School"])
-#
-#     # Draw the updated figure
-#     plt.draw()
-#
-#     # Add a short pause to allow the plot to update
-#     plt.pause(0.01)
-#
-#     return fig
-
-
 def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
     """
     Plots the activity at a given time step.
@@ -138,23 +124,12 @@ def plot_activity_at_time_step(activity, field_pars, elapsed_time, fig=None):
 
     plt.plot(x, activity)
     plt.xlim(-90, 30)
-    # plt.xlabel('x')
     plt.ylabel('u(x)')
-    # add title with the current time step
-    # Extract only hours and minutes
-    # hours, minutes, _ = map(int, elapsed_time.split(':'))
 
     # Update the title with formatted elapsed time
     plt.title(f'time:  {elapsed_time[:4]}')
 
     plt.xticks([-60, -30, 0], ["Home", "Work", "School"])
-
-    # # Now let's add your additional information
-    # ax.annotate('...Additional information...',
-    #             xy=(0.5, 0), xytext=(0, 10),
-    #             xycoords=('axes fraction', 'figure fraction'),
-    #             textcoords='offset points',
-    #             size=14, ha='center', va='bottom')
 
     # Draw the updated figure
     plt.draw()
