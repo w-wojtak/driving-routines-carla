@@ -132,20 +132,15 @@ if desired_blueprint:
     # Set message to empty string
     message = []
 
+    # Set the time of day in minutes (420 -> 7AM)
+    time_day = 420
+
     for index, waypoint in enumerate(route):
+
         # Move the car to the current waypoint
         vehicle.set_transform(waypoint[0].transform)
 
-        # day onset time in minutes (420 -> 7AM)
-        day_onset = 420
-
-        # Calculate the elapsed time
-        elapsed_time = time.time() - time_start + day_onset
-
-        elapsed_time_minutes = elapsed_time
-
-        # Format elapsed time as HH:MM
-        elapsed_time_formatted = str(datetime.timedelta(minutes=elapsed_time_minutes))
+        time_day += .015
 
         # Check if the vehicle has arrived at any of the destinations
         for destination_name, destination_location in destinations.items():
@@ -154,7 +149,7 @@ if desired_blueprint:
                     if destination_name in destinations_copy.keys():
                         print(f"You arrived at {destination_name}")
                         message = f"You arrived at {destination_name}"
-                        plot_activity_with_message(u_field, field_pars, elapsed_time_formatted, message, fig=fig)
+                        plot_activity_with_message(u_field, field_pars, time_day, message, fig=fig)
                         plt.clf()
                         del destinations_copy[destination_name]
                         message = []
@@ -177,7 +172,7 @@ if desired_blueprint:
         f_hat = np.fft.fft(f)
         conv = dx * np.fft.ifftshift(np.real(np.fft.ifft(f_hat * w_hat)))
         h_u = h_u + dt / tau_h * f  # threshold adaptation
-        if input_on and elapsed_time > (day_onset + 5):
+        if input_on and time_day > 421:
             input = input_shape[0] * np.exp(-0.5 * (x - input_position) ** 2 / input_shape[1] ** 2)
             # print(f"input on at {input_position}")
         else:
@@ -187,12 +182,12 @@ if desired_blueprint:
 
         # plot the field activity u_field for each 10th waypoint
         if (index % 10 == 0) or message:
-            plot_activity_with_message(u_field, field_pars, elapsed_time_formatted, message, fig=fig)
+            plot_activity_with_message(u_field, field_pars, time_day, message, fig=fig)
             # clear the figure so that the next time step can be plotted
             plt.clf()
 
         # Sleep for a short duration
-        time.sleep(0.001)
+        time.sleep(0.0001)
 
         # Update the previous waypoints list
         previous_waypoints.append(waypoint)
@@ -203,7 +198,7 @@ if desired_blueprint:
 
     time.sleep(5)
 
-    plot_activity_at_time_step(u_field, field_pars, elapsed_time_formatted, fig=fig)
+    plot_activity_with_message(u_field, field_pars, time_day, fig=fig)
     fig.savefig('routine_memory.png')
     plt.clf()
 

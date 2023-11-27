@@ -25,7 +25,16 @@ def plot_activity_with_message(activity, field_pars, elapsed_time, message=None,
     plt.ylabel('u(x)')
 
     # Update the title with formatted elapsed time
-    plt.title(f'time:  {elapsed_time[:4]}')
+    # plt.title(f'time:  {elapsed_time[:4]}')
+
+    # Calculate hours and minutes
+    hours = int(elapsed_time // 60)
+    minutes = int(elapsed_time % 60)
+
+    # Format the result
+    # formatted_time = f"{hours:02d}:{minutes:02d}"
+
+    plt.title(f'time:  {hours:02d}:{minutes:02d}')
 
     plt.xticks([-60, -30, 0], ["Home", "Work", "School"])
 
