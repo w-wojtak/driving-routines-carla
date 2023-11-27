@@ -200,5 +200,11 @@ if desired_blueprint:
     elapsed_time_total = time.time() - time_start
     print(f"Total elapsed time: {elapsed_time_total:.2f} seconds")
 
+    # Specify the file name
+    file_name_field = "sequence_memory.npy"
+
+    # Save memory to the file
+    np.save(file_name_field, u_field)
+
 else:
     print(f"Blueprint {desired_blueprint_key} not found.")
