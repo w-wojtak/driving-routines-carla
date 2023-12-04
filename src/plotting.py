@@ -4,7 +4,7 @@ import time
 from matplotlib.widgets import Slider, Button
 
 
-def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, message=None, fig=None, axes=None):
+def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, message_arrival=None, message_decision=None, fig=None, axes=None):
     """
     Plots u_field, u_dec, and u_wm in a single figure with three subplots in one row and three columns.
     """
@@ -18,6 +18,9 @@ def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, mess
         fig.clear()
         axes = fig.subplots(1, 3)
 
+    fig.subplots_adjust(left=0.05, right=0.95)
+    fig.subplots_adjust(bottom=0.3, top=0.8)
+
     # Plot u_field, u_dec, and u_wm in three subplots
     for i, (activity, label, y_lim) in enumerate(
             zip([u_field, u_dec, u_wm], ['u_field(x)', 'u_dec(x)', 'u_wm(x)'], [(-1, 10), (-10, 10), (-2, 3.5)])):
@@ -28,6 +31,7 @@ def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, mess
         axes[i].set_ylim(y_lim)
         axes[i].set_title(label)
         axes[i].set_ylabel('Amplitude')
+        # axes[i].set_aspect(8 / 1)
 
     # Calculate hours and minutes
     hours = int(elapsed_time // 60)
@@ -35,20 +39,74 @@ def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, mess
 
     fig.suptitle(f'Time: {hours:02d}:{minutes:02d}')
 
-    # If message not empty, add a text field
-    if message:
-        for i in range(3):
-            axes[i].annotate(message, xy=(0.5, 0),
-                             xycoords=('axes fraction', 'figure fraction'),
-                             xytext=(0, 5),
-                             textcoords='offset points',
-                             size=14, ha='center', va='bottom')
+    # If message not empty, add a text field to the first subplot
+    if message_arrival:
+        axes[0].annotate(message_arrival, xy=(0.5, 0),
+                         xycoords=('axes fraction', 'figure fraction'),
+                         xytext=(0, 10),
+                         textcoords='offset points',
+                         size=14, ha='center', va='bottom')
+        plt.pause(2)
+
+    # If message_decision not empty, add a text field to the second subplot
+    if message_decision:
+        axes[1].annotate(message_decision, xy=(0.5, 0),
+                         xycoords=('axes fraction', 'figure fraction'),
+                         xytext=(0, 5),
+                         textcoords='offset points',
+                         size=14, ha='center', va='bottom')
 
     # Draw the updated figure
     plt.draw()
     plt.pause(0.01)
 
     return fig, axes
+
+# def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, message=None, fig=None, axes=None):
+#     """
+#     Plots u_field, u_dec, and u_wm in a single figure with three subplots in one row and three columns.
+#     """
+#     x_lim, dx, dt, _ = field_pars
+#     x = np.arange(-x_lim, x_lim + dx, dx)
+#
+#     # If fig and axes are not provided, create a new figure
+#     if fig is None or axes is None:
+#         fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+#     else:
+#         fig.clear()
+#         axes = fig.subplots(1, 3)
+#
+#     # Plot u_field, u_dec, and u_wm in three subplots
+#     for i, (activity, label, y_lim) in enumerate(
+#             zip([u_field, u_dec, u_wm], ['u_field(x)', 'u_dec(x)', 'u_wm(x)'], [(-1, 10), (-10, 10), (-2, 3.5)])):
+#         axes[i].plot(x, activity)
+#         axes[i].set_xlim(-90, 30)
+#         axes[i].set_xticks([-60, -30, 0])
+#         axes[i].set_xticklabels(["Home", "Work", "School"])
+#         axes[i].set_ylim(y_lim)
+#         axes[i].set_title(label)
+#         axes[i].set_ylabel('Amplitude')
+#
+#     # Calculate hours and minutes
+#     hours = int(elapsed_time // 60)
+#     minutes = int(elapsed_time % 60)
+#
+#     fig.suptitle(f'Time: {hours:02d}:{minutes:02d}')
+#
+#     # If message not empty, add a text field
+#     if message:
+#         for i in range(3):
+#             axes[i].annotate(message, xy=(0.5, 0),
+#                              xycoords=('axes fraction', 'figure fraction'),
+#                              xytext=(0, 5),
+#                              textcoords='offset points',
+#                              size=14, ha='center', va='bottom')
+#
+#     # Draw the updated figure
+#     plt.draw()
+#     plt.pause(0.01)
+#
+#     return fig, axes
 
 
 def plot_activity_with_message(activity, field_pars, elapsed_time, message=None, fig=None):

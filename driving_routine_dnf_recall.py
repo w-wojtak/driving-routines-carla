@@ -167,7 +167,8 @@ if desired_blueprint:
     fig_memory_decision_wm, axes_memory_decision_wm = plt.subplots(1, 3, figsize=(14, 5))
 
     # Set message to empty string
-    message = []
+    message_arrival = []
+    message_decision = []
 
     # Set the time of day in minutes (420 -> 7AM)
     time_day = 420
@@ -188,15 +189,17 @@ if desired_blueprint:
                     if destination_name in destinations_copy.keys():
                         print(f"You arrived at {destination_name}")
                         print(f"time= {time_day}")
-                        message = f"You arrived at {destination_name}"
-                        # plot_activity_with_message(u_field, field_pars, time_day, message, fig=fig)
-                        # plt.clf()
-                        # plot_decision_wm(u_dec, u_wm, field_pars, time_day, message, fig=fig2)
-                        # # clear the figure so that the next time step can be plotted
-                        # plt.clf()
-                        # time.sleep(0.0001)
+                        message_arrival = f"You arrived at {destination_name}"
+                        fig_memory_decision_wm, axes_memory_decision_wm = plot_memory_decision_wm(u_field, u_dec, u_wm,
+                                                                                                  field_pars,
+                                                                                                  time_day, message_arrival,
+                                                                                                  message_decision,
+                                                                                                  fig=fig_memory_decision_wm,
+                                                                                                  axes=axes_memory_decision_wm)
+                        time.sleep(2)
+                        plt.clf()
                         del destinations_copy[destination_name]
-                        message = []
+                        message_arrival = []
 
                 # Set input_position based on the destination_name
                 input_position = input_positions.get(destination_name, 0)
@@ -242,19 +245,30 @@ if desired_blueprint:
         for k in indices_closest:
             if len(u_dec_prev) > 0 and u_dec[k] > theta and (u_dec_prev[k] < theta):
                 print(f"recalled time {count}: {time_day:.1f}")
+                closest_key = min(input_positions, key=lambda key: abs(input_positions[key] - x[np.argmax(u_dec)]))
+                message_decision = f"You should be at {closest_key} in 10 minutes!"
+                fig_memory_decision_wm, axes_memory_decision_wm = plot_memory_decision_wm(u_field, u_dec, u_wm,
+                                                                                          field_pars,
+                                                                                          time_day, message_arrival,
+                                                                                          message_decision,
+                                                                                          fig=fig_memory_decision_wm,
+                                                                                          axes=axes_memory_decision_wm)
+                plt.pause(2)
+                plt.clf()
                 count += 1
+                message_decision = []
 
         # Store the current u_dec for the next iteration
         u_dec_prev = u_dec.copy()
 
         # plot the field activity u_field for each 10th waypoint
-        if (index % 10 == 0) or message:
+        if index % 10 == 0:
             fig_memory_decision_wm, axes_memory_decision_wm = plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars,
-                                                                                      time_day, message,
+                                                                                      time_day, message_arrival,
+                                                                                      message_decision,
                                                                                       fig=fig_memory_decision_wm,
                                                                                       axes=axes_memory_decision_wm)
             plt.clf()
-            time.sleep(0.0001)
 
         # Sleep for a short duration
         time.sleep(0.0001)
@@ -269,7 +283,8 @@ if desired_blueprint:
     time.sleep(5)
 
     fig_memory_decision_wm, axes_memory_decision_wm = plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars,
-                                                                              time_day, message,
+                                                                              time_day, message_arrival,
+                                                                              message_decision,
                                                                               fig=fig_memory_decision_wm,
                                                                               axes=axes_memory_decision_wm)
     fig_memory_decision_wm.savefig('routine_memory_decision_wm.png')
