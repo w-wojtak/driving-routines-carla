@@ -39,13 +39,14 @@ def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, mess
 
     fig.suptitle(f'Time: {hours:02d}:{minutes:02d}')
 
-    # If message not empty, add a text field to the first subplot
+    # If message_arrival not empty, add a text field to the first subplot
     if message_arrival:
         axes[0].annotate(message_arrival, xy=(0.5, 0),
                          xycoords=('axes fraction', 'figure fraction'),
                          xytext=(0, 10),
                          textcoords='offset points',
-                         size=14, ha='center', va='bottom')
+                         size=14, ha='center', va='bottom',
+                         color='darkgreen')
         plt.pause(2)
 
     # If message_decision not empty, add a text field to the second subplot
@@ -54,7 +55,8 @@ def plot_memory_decision_wm(u_field, u_dec, u_wm, field_pars, elapsed_time, mess
                          xycoords=('axes fraction', 'figure fraction'),
                          xytext=(0, 5),
                          textcoords='offset points',
-                         size=14, ha='center', va='bottom')
+                         size=14, ha='center', va='bottom',
+                         color='darkred')
 
     # Draw the updated figure
     plt.draw()
